@@ -1,46 +1,15 @@
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { Mail, Phone, Download, Copy, Check } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { translations, contactInfo } from "@/data/portfolio";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-
-type ContactFormValues = {
-  name: string;
-  email: string;
-  subject: string;
-  message: string;
-};
 
 export default function Contact() {
   const { t } = useLanguage();
   const { toast } = useToast();
   const [emailCopied, setEmailCopied] = useState(false);
-
-  // Create schema dynamically based on current language
-  const contactFormSchema = useMemo(() => z.object({
-    name: z.string().min(2, t(translations.contact.validation.nameMin)),
-    email: z.string().email(t(translations.contact.validation.emailInvalid)),
-    subject: z.string().min(3, t(translations.contact.validation.subjectMin)),
-    message: z.string().min(10, t(translations.contact.validation.messageMin))
-  }), [t]);
-
-  const form = useForm<ContactFormValues>({
-    resolver: zodResolver(contactFormSchema),
-    defaultValues: {
-      name: "",
-      email: "",
-      subject: "",
-      message: ""
-    }
-  });
 
   const copyEmail = async () => {
     try {
@@ -56,15 +25,7 @@ export default function Contact() {
     }
   };
 
-  const onSubmit = (data: ContactFormValues) => {
-    // Open mailto link with form data
-    const subject = encodeURIComponent(data.subject);
-    const fromLabel = t(translations.contact.mailtoFrom);
-    const body = encodeURIComponent(
-      `${fromLabel}: ${data.name} (${data.email})\n\n${data.message}`
-    );
-    window.location.href = `mailto:${contactInfo.email}?subject=${subject}&body=${body}`;
-  };
+
 
   return (
     <section id="contact" className="py-20 bg-muted/20">
@@ -79,76 +40,9 @@ export default function Contact() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
-            {/* Contact Form */}
-            <Card className="p-8">
-              <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                  <FormField
-                    control={form.control}
-                    name="name"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t(translations.contact.name)}</FormLabel>
-                        <FormControl>
-                          <Input {...field} data-testid="input-name" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t(translations.contact.email)}</FormLabel>
-                        <FormControl>
-                          <Input type="email" {...field} data-testid="input-email" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="subject"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t(translations.contact.subject)}</FormLabel>
-                        <FormControl>
-                          <Input {...field} data-testid="input-subject" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="message"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{t(translations.contact.message)}</FormLabel>
-                        <FormControl>
-                          <Textarea rows={6} {...field} data-testid="input-message" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <Button type="submit" className="w-full" size="lg" data-testid="button-send">
-                    {t(translations.contact.send)}
-                  </Button>
-                </form>
-              </Form>
-            </Card>
-
+          <div className="grid grid-cols-1 lg:grid-cols-1 gap-8 max-w-6xl mx-auto">
             {/* Contact Info */}
-            <div className="space-y-6">
+            <div className="space-y-6 lg:max-w-md mx-auto">
               <Card className="p-8 space-y-6">
                 <div>
                   <h3 className="text-lg font-semibold text-foreground mb-4">
